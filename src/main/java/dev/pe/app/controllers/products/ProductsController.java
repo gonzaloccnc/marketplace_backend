@@ -1,11 +1,13 @@
 package dev.pe.app.controllers.products;
 
 import dev.pe.app.domain.utils.responses.DataResponse;
+import dev.pe.app.domain.utils.responses.ErrorInfo;
 import dev.pe.app.domain.utils.responses.PageableResponse;
 import dev.pe.app.models.Product;
 import dev.pe.app.models.ProductsView;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ProductsController {
 
-  /// TODO MAKE VALIDATIONS AND HANDLERS ERRORS EXCEPT GET MAPPING
+  /// TODO separate the logic in methods for everyone of CRUD, not responses only logic
 
   private IProductsReadOnlyRepo productsReadOnlyRepo;
   private IProductRepo productRepo;
@@ -82,6 +84,17 @@ public class ProductsController {
       @PathVariable UUID id
   ) {
 
+    if(productRepo.findById(id).isEmpty()){
+      return ResponseEntity.badRequest().body(
+          DataResponse.<Product>builder()
+              .data(null)
+              .status(HttpStatus.BAD_REQUEST.value())
+              .message("Product with id: " + id + " doesn't exist")
+              .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+              .build()
+      );
+    }
+
     product.setIdProduct(id);
     var productUpdate = productRepo.save(product);
 
@@ -97,6 +110,17 @@ public class ProductsController {
 
   @DeleteMapping("/{id}")
   public ResponseEntity<DataResponse<Product>> delete(@PathVariable UUID id) {
+
+    if(productRepo.findById(id).isEmpty()) {
+      return ResponseEntity.ok(
+          DataResponse
+              .<Product>builder()
+              .message("The product was deleted previously or doesn't exist")
+              .status(HttpStatus.OK.value())
+              .build()
+      );
+    }
+
     productRepo.deleteById(id);
 
     return ResponseEntity.ok(
@@ -107,5 +131,4 @@ public class ProductsController {
             .build()
     );
   }
-
 }
