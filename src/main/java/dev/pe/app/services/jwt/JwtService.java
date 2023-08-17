@@ -1,4 +1,4 @@
-package dev.pe.app.domain.services.jwt;
+package dev.pe.app.services.jwt;
 
 import dev.pe.app.models.User;
 import io.jsonwebtoken.Claims;

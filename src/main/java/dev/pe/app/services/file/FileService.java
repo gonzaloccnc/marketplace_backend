@@ -1,4 +1,4 @@
-package dev.pe.app.domain.services.file;
+package dev.pe.app.services.file;
 
 import dev.pe.app.domain.handlers.FileNotFoundException;
 import dev.pe.app.domain.handlers.StorageException;

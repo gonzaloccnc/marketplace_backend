@@ -1,7 +1,7 @@
 package dev.pe.app.security;
 
 import dev.pe.app.models.User;
-import dev.pe.app.domain.services.jwt.JwtService;
+import dev.pe.app.services.jwt.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

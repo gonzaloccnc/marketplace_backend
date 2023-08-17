@@ -25,56 +25,28 @@ public class ApiExceptionHandler {
             .builder()
             .message(HttpStatus.NOT_FOUND.getReasonPhrase())
             .status(HttpStatus.NOT_FOUND.value())
-            .error(ex.getLocalizedMessage())
+            .error(ex.getMessage())
             .url(req.getRequestURI())
-            .build()
-    );
-  }
-
-  @ExceptionHandler(NumberFormatException.class)
-  @Order(2)
-  ResponseEntity<ErrorInfo> handleNumberFormatException(HttpServletRequest req, NumberFormatException ex) {
-    return ResponseEntity.badRequest().body(
-        ErrorInfo
-            .builder()
-            .url(req.getRequestURI())
-            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-            .status(HttpStatus.BAD_REQUEST.value())
-            .message(ex.getLocalizedMessage())
-            .build()
-    );
-  }
-
-  @ExceptionHandler(SQLException.class)
-  @Order(3)
-  ResponseEntity<ErrorInfo> handleSqlThrows(HttpServletRequest req, SQLException ex) {
-    return ResponseEntity.badRequest().body(
-        ErrorInfo
-            .builder()
-            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-            .message(ex.getLocalizedMessage())
-            .url(req.getRequestURI())
-            .status(HttpStatus.BAD_REQUEST.value())
             .build()
     );
   }
 
   @ExceptionHandler(JsonProcessingException.class)
-  @Order(4)
+  @Order(2)
   ResponseEntity<ErrorInfo> handleParseJson(HttpServletRequest req, JsonProcessingException ex) {
     return ResponseEntity.badRequest().body(
         ErrorInfo
             .builder()
             .url(req.getRequestURI())
             .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-            .message(ex.getMessage())
+            .message(ex.getOriginalMessage())
             .status(HttpStatus.BAD_REQUEST.value())
             .build()
     );
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
-  @Order(5)
+  @Order(3)
   ResponseEntity<ErrorInfo> handleConverterString(HttpServletRequest req, IllegalArgumentException ex) {
     return ResponseEntity.badRequest().body(
         ErrorInfo.builder()
@@ -87,14 +59,14 @@ public class ApiExceptionHandler {
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
-  @Order(6)
+  @Order(4)
   ResponseEntity<ErrorInfo> handleViolateConstraint(HttpServletRequest req, ConstraintViolationException ex){
     return ResponseEntity.badRequest().body(
         ErrorInfo
             .builder()
             .url(req.getRequestURI())
             .status(HttpStatus.BAD_REQUEST.value())
-            .message(ex.getLocalizedMessage())
+            .message(ex.getSQLException().getMessage())
             .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
             .build()
     );
@@ -103,7 +75,7 @@ public class ApiExceptionHandler {
   /// TODO when this is activated some methods do not work and arrive at this
   /*
   @ExceptionHandler(Exception.class)
-  @Order(7)
+  @Order(5)
   ResponseEntity<ErrorInfo> handleJWT(HttpServletRequest req, Exception ex) {
     var status = getStatus(req);
 

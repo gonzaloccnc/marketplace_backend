@@ -2,7 +2,7 @@ package dev.pe.app.controllers.auth.service;
 
 import dev.pe.app.models.User;
 import dev.pe.app.controllers.auth.IUserRepo;
-import dev.pe.app.domain.services.jwt.JwtService;
+import dev.pe.app.services.jwt.JwtService;
 import dev.pe.app.domain.utils.request.AuthenticationRequest;
 import dev.pe.app.domain.utils.responses.AuthenticationResponse;
 import dev.pe.app.domain.utils.request.RegisterRequest;

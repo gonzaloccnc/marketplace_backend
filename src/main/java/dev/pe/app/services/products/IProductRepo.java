@@ -1,6 +1,6 @@
-package dev.pe.app.controllers.products;
+package dev.pe.app.services.products;
 
-import dev.pe.app.models.Product;
+import dev.pe.app.models.product.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

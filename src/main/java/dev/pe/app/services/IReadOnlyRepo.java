@@ -1,4 +1,4 @@
-package dev.pe.app.controllers.products;
+package dev.pe.app.services;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +8,7 @@ import org.springframework.data.repository.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @NoRepositoryBean
 public interface IReadOnlyRepo<T, ID> extends Repository<T, ID> {
@@ -18,4 +19,8 @@ public interface IReadOnlyRepo<T, ID> extends Repository<T, ID> {
   Page<T> findAll(Pageable pageable);
 
   Optional<T> findById(ID id);
+
+  List<T> findAllById(UUID id);
+
+  Page<T> findAllById(Pageable pageable, UUID id);
 }
