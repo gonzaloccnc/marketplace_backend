@@ -1,5 +1,6 @@
 package dev.pe.app.services.products;
 
+import dev.pe.app.domain.utils.PageableUtil;
 import dev.pe.app.domain.utils.responses.DataResponse;
 import dev.pe.app.domain.utils.responses.DataResponseList;
 import dev.pe.app.domain.utils.responses.PageableResponse;
@@ -34,21 +35,12 @@ public class ProductService implements ICrudService<Product, ProductsView, UUID>
   }
 
   @Override
-  public DataResponseList<ProductsView> findAll() {
-    return null;
-  }
-
-  @Override
   public PageableResponse<ProductsView> findAll(Pageable pageable) {
     var pageOfProducts = productsReadOnlyRepo.findAll(pageable);
 
-    var prev = pageOfProducts.hasPrevious()
-        ? "?page=" + pageOfProducts.previousPageable().getPageNumber() + "&size=" + pageOfProducts.getSize()
-        : null;
+    var prev = PageableUtil.getPrevPage(pageOfProducts);
 
-    var next = pageOfProducts.hasNext()
-        ? "?page=" + pageOfProducts.nextPageable().getPageNumber() + "&size=" + pageOfProducts.getSize()
-        : null;
+    var next = PageableUtil.getNextPage(pageOfProducts);
 
     if(pageOfProducts.getNumber() >= pageOfProducts.getTotalPages()) {
       return PageableResponse

@@ -1,9 +1,9 @@
 package dev.pe.app.models.shopcart;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-@Entity @Data
+@Entity @Data @Builder @AllArgsConstructor @NoArgsConstructor
 public class Shopcart {
 
   @EmbeddedId

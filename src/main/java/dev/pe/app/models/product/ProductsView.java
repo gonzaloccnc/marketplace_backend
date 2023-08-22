@@ -26,4 +26,6 @@ public class ProductsView {
   private int stock;
   private Double price;
   private boolean active;
+  private String photoMd;
+  private String photoLg;
 }

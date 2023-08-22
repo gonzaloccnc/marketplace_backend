@@ -17,10 +17,4 @@ public interface IReadOnlyRepo<T, ID> extends Repository<T, ID> {
   List<T> findAll(Sort sort);
 
   Page<T> findAll(Pageable pageable);
-
-  Optional<T> findById(ID id);
-
-  List<T> findAllById(UUID id);
-
-  Page<T> findAllById(Pageable pageable, UUID id);
 }

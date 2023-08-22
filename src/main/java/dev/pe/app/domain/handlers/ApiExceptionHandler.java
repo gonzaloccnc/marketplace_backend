@@ -5,6 +5,7 @@ import dev.pe.app.domain.utils.responses.ErrorInfo;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.id.IdentifierGenerationException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +68,20 @@ public class ApiExceptionHandler {
             .url(req.getRequestURI())
             .status(HttpStatus.BAD_REQUEST.value())
             .message(ex.getSQLException().getMessage())
+            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+            .build()
+    );
+  }
+
+  @ExceptionHandler(IdentifierGenerationException.class)
+  @Order(5)
+  ResponseEntity<ErrorInfo> handleIdentifierGeneration(HttpServletRequest req, IdentifierGenerationException ex) {
+    return ResponseEntity.badRequest().body(
+        ErrorInfo
+            .builder()
+            .url(req.getRequestURI())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .message(ex.getMessage())
             .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
             .build()
     );

@@ -1,10 +1,8 @@
 package dev.pe.app.models.product;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -22,4 +20,7 @@ public class Product {
   private UUID idUser;
   private int idSubcategory;
   private int brandsId;
+
+  @Transient
+  private MultipartFile file;
 }

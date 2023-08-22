@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +38,9 @@ public class User implements UserDetails {
   private String email;
 
   private String jwtToken;
+
+  @Transient
+  private MultipartFile file;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

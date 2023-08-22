@@ -21,7 +21,7 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class FileService implements IFileService {
 
-  @Value("${store.location}")
+  @Value("${images}")
   private String storageLocation;
 
   @PostConstruct

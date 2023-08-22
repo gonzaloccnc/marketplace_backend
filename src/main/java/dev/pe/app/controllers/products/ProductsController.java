@@ -1,5 +1,6 @@
 package dev.pe.app.controllers.products;
 
+import dev.pe.app.domain.utils.PageableUtil;
 import dev.pe.app.domain.utils.responses.DataResponse;
 import dev.pe.app.domain.utils.responses.PageableResponse;
 import dev.pe.app.models.product.Product;
@@ -25,9 +26,7 @@ public class ProductsController {
       @PageableDefault(size = 20, sort = "productName") Pageable pageable,
       HttpServletRequest request
   ) {
-    String URI = request.getRequestURI();
-
-    var domain = request.getRequestURL().toString().replace(URI, "") + URI;
+    var domain = PageableUtil.getDomain(request);
     var message = productService.findAll(pageable);
 
     if (message.getData() != null) {
