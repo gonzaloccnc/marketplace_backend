@@ -26,13 +26,42 @@ public class ProductsController {
       @PageableDefault(size = 20, sort = "productName") Pageable pageable,
       HttpServletRequest request
   ) {
-    var domain = PageableUtil.getDomain(request);
     var message = productService.findAll(pageable);
 
-    if (message.getData() != null) {
-      message.setNext(message.getNext() == null ? null : domain + message.getNext());
-      message.setPrev(message.getPrev() == null ? null : domain + message.getPrev());
-    }
+    var map = PageableUtil.getLinks(message, request);
+
+    message.setPrev(map.get("prev"));
+    message.setNext(map.get("next"));
+
+    return ResponseEntity.status(message.getStatus()).body(message);
+  }
+
+  @GetMapping("/new")
+  public ResponseEntity<PageableResponse<?>> newProducts(
+    @PageableDefault(size = 20, sort = "productName") Pageable pageable,
+    HttpServletRequest req
+  ) {
+    var message = productService.findAllNews(pageable);
+
+    var map = PageableUtil.getLinks(message, req);
+
+    message.setPrev(map.get("prev"));
+    message.setNext(map.get("next"));
+
+    return ResponseEntity.status(message.getStatus()).body(message);
+  }
+
+  @GetMapping("/best/selled")
+  public ResponseEntity<PageableResponse<?>> bestSells(
+      @PageableDefault(size = 20, sort = "productName") Pageable pageable,
+      HttpServletRequest req
+  ) {
+    var message = productService.findAllMoreSelled(pageable);
+
+    var map = PageableUtil.getLinks(message, req);
+
+    message.setPrev(map.get("prev"));
+    message.setNext(map.get("next"));
 
     return ResponseEntity.status(message.getStatus()).body(message);
   }

@@ -1,19 +1,16 @@
-package dev.pe.app.models.shopcart;
-
+package dev.pe.app.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Data;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Entity(name = "vw_all_shopcart") @Data
-public class ShopcartView {
-
-  @EmbeddedId
-  private ShopcartKey id;
+@Data @Builder
+public class ShopcartViewDTO {
+  private UUID idUserBuyer;
+  private UUID idProduct;
 
   private String productName;
   private double price;

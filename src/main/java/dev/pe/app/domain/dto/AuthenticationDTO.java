@@ -1,4 +1,4 @@
-package dev.pe.app.domain.utils.responses;
+package dev.pe.app.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
+public class AuthenticationDTO {
   private String token;
 }

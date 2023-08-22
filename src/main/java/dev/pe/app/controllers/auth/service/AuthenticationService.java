@@ -4,12 +4,11 @@ import dev.pe.app.models.User;
 import dev.pe.app.controllers.auth.IUserRepo;
 import dev.pe.app.services.jwt.JwtService;
 import dev.pe.app.domain.utils.request.AuthenticationRequest;
-import dev.pe.app.domain.utils.responses.AuthenticationResponse;
+import dev.pe.app.domain.dto.AuthenticationDTO;
 import dev.pe.app.domain.utils.request.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager manager;
 
-  public AuthenticationResponse register(RegisterRequest request) {
+  public AuthenticationDTO register(RegisterRequest request) {
     var user = User.builder()
         .firstname(request.getFirstname())
         .lastname(request.getLastname())
@@ -36,12 +35,12 @@ public class AuthenticationService {
     userRepo.save(user);
     var jwtToken = jwtService.generateToken(user);
 
-    return AuthenticationResponse.builder()
+    return AuthenticationDTO.builder()
         .token(jwtToken)
         .build();
   }
 
-  public AuthenticationResponse authenticate(AuthenticationRequest request) {
+  public AuthenticationDTO authenticate(AuthenticationRequest request) {
     manager.authenticate(
         new UsernamePasswordAuthenticationToken(
             request.getEmail(),
@@ -52,7 +51,7 @@ public class AuthenticationService {
     var user = userRepo.findByEmail(request.getEmail()).orElseThrow();
     var jwtToken = jwtService.generateToken(user);
 
-    return AuthenticationResponse.builder()
+    return AuthenticationDTO.builder()
         .token(jwtToken)
         .build();
   }

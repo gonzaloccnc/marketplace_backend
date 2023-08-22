@@ -4,6 +4,8 @@ import dev.pe.app.domain.utils.PageableUtil;
 import dev.pe.app.domain.utils.responses.DataResponse;
 import dev.pe.app.domain.utils.responses.DataResponseList;
 import dev.pe.app.domain.utils.responses.PageableResponse;
+import dev.pe.app.domain.dto.ShopcartViewDTO;
+import dev.pe.app.models.product.ProductsView;
 import dev.pe.app.models.shopcart.Shopcart;
 import dev.pe.app.models.shopcart.ShopcartKey;
 import dev.pe.app.models.shopcart.ShopcartView;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service @RequiredArgsConstructor
-public class ShopcartService implements ICrudService<Shopcart, ShopcartView, ShopcartKey> {
+public class ShopcartService implements ICrudService<Shopcart, ShopcartViewDTO, ShopcartKey> {
 
   private final IShopcartRepo shopcartRepo;
   private final IShopcartReadOnly shopcartReadOnly;
@@ -109,26 +111,39 @@ public class ShopcartService implements ICrudService<Shopcart, ShopcartView, Sho
         .build();
   }
 
-  public DataResponseList<ShopcartView> findAll(UUID id) {
+  public DataResponseList<ShopcartViewDTO> findAll(UUID id) {
     var shopcart = shopcartReadOnly.findAllByIdUserBuyer(id);
+    var dtoList = this.mapToDTO(shopcart);
 
     return DataResponseList
-        .<ShopcartView>builder()
-        .data(shopcart)
+        .<ShopcartViewDTO>builder()
+        .data(dtoList)
         .message("shopcart was listed")
         .status(HttpStatus.OK.value())
         .build();
   }
 
-  public PageableResponse<ShopcartView> findAll(Pageable pageable, UUID id) {
-    var shopcart = shopcartReadOnly.findAllByIdUserBuyer(pageable, id);
+  public PageableResponse<ShopcartViewDTO> findAll(Pageable pageable, UUID id) {
+    var shopcart = shopcartReadOnly.findAllByIdUserBuyer(id, pageable);
+    var dtoList = this.mapToDTO(shopcart.getContent());
 
     var prev = PageableUtil.getPrevPage(shopcart);
     var next = PageableUtil.getNextPage(shopcart);
 
+    if(shopcart.getNumber() >= shopcart.getTotalPages()) {
+      return PageableResponse
+          .<ShopcartViewDTO>builder()
+          .status(HttpStatus.BAD_REQUEST.value())
+          .error(
+              "No content page, see that the page is less than " + shopcart.getTotalPages()
+          )
+          .build();
+    }
+
+
     return PageableResponse
-        .<ShopcartView>builder()
-        .data(shopcart.getContent())
+        .<ShopcartViewDTO>builder()
+        .data(dtoList)
         .prev(prev)
         .next(next)
         .page(shopcart.getNumber())
@@ -138,4 +153,20 @@ public class ShopcartService implements ICrudService<Shopcart, ShopcartView, Sho
         .status(HttpStatus.OK.value())
         .build();
   }
+
+  private List<ShopcartViewDTO> mapToDTO(List<ShopcartView> view) {
+   return view.stream().map(x -> ShopcartViewDTO.builder()
+       .idUserBuyer(x.getId().getIdUserBuyer())
+       .idProduct(x.getId().getIdProduct())
+       .productName(x.getProductName())
+       .price(x.getPrice())
+       .quantity(x.getQuantity())
+       .total(x.getTotal())
+       .dateAdded(x.getDateAdded())
+       .photoMd(x.getPhotoMd())
+       .photoLg(x.getPhotoLg())
+       .build()
+   ).toList();
+  }
+
 }

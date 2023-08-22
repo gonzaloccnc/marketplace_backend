@@ -6,9 +6,9 @@ import dev.pe.app.domain.utils.request.shopcart.ShopcartReq;
 import dev.pe.app.domain.utils.responses.DataResponse;
 import dev.pe.app.domain.utils.responses.DataResponseList;
 import dev.pe.app.domain.utils.responses.PageableResponse;
+import dev.pe.app.domain.dto.ShopcartViewDTO;
 import dev.pe.app.models.shopcart.Shopcart;
 import dev.pe.app.models.shopcart.ShopcartKey;
-import dev.pe.app.models.shopcart.ShopcartView;
 import dev.pe.app.services.shopcart.ShopcartService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @RestController @RequestMapping("/shopcart") @RequiredArgsConstructor
@@ -27,26 +26,23 @@ public class ShopCartController {
   private final ShopcartService shopcartService;
 
   @GetMapping("/page/{userID}")
-  ResponseEntity<PageableResponse<ShopcartView>> index(
-      @PageableDefault(size = 20) Pageable pageable,
+  ResponseEntity<PageableResponse<ShopcartViewDTO>> index(
+      @PageableDefault Pageable pageable,
       @PathVariable UUID userID,
       HttpServletRequest request
   ) {
 
-    var domain = PageableUtil.getDomain(request);
     var message = shopcartService.findAll(pageable, userID);
+    var map = PageableUtil.getLinks(message, request);
 
-    if (message.getData() != null) {
-      message.setNext(message.getNext() == null ? null : domain + message.getNext());
-      message.setPrev(message.getPrev() == null ? null : domain + message.getPrev());
-    }
+    message.setPrev(map.get("prev"));
+    message.setNext(map.get("next"));
 
     return ResponseEntity.status(message.getStatus()).body(message);
   }
 
   @GetMapping("/{userID}")
-  ResponseEntity<DataResponseList<ShopcartView>> getShopcart(@PathVariable UUID userID) {
-    // TODO BUG AL DEVOLVER EL CARRITO DE COMPRAS DEVUELVE 2 IGUALES LO CUAL ES INCORRECTO
+  ResponseEntity<DataResponseList<ShopcartViewDTO>> getShopcart(@PathVariable UUID userID) {
     var message = shopcartService.findAll(userID);
     return ResponseEntity.status(message.getStatus()).body(message);
   }

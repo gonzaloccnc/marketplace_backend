@@ -2,6 +2,7 @@ package dev.pe.app.domain.handlers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.pe.app.domain.utils.responses.ErrorInfo;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import org.hibernate.exception.ConstraintViolationException;
@@ -9,10 +10,12 @@ import org.hibernate.id.IdentifierGenerationException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.nio.file.AccessDeniedException;
 import java.sql.SQLException;
 
 @RestControllerAdvice
@@ -86,6 +89,47 @@ public class ApiExceptionHandler {
             .build()
     );
   }
+
+  /*
+  @ExceptionHandler(AccountStatusException.class)
+  ResponseEntity<ErrorInfo> handleAccountStatusException(HttpServletRequest req, AccountStatusException ex) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+        ErrorInfo
+            .builder()
+            .url(req.getRequestURI())
+            .status(HttpStatus.UNAUTHORIZED.value())
+            .message(ex.getMessage())
+            .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+            .build()
+    );
+  }
+
+  @ExceptionHandler(JwtException.class)
+  ResponseEntity<ErrorInfo> handleAccountStatusException(HttpServletRequest req, JwtException ex) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+        ErrorInfo
+            .builder()
+            .url(req.getRequestURI())
+            .status(HttpStatus.UNAUTHORIZED.value())
+            .message(ex.getMessage())
+            .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+            .build()
+    );
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  ResponseEntity<ErrorInfo> handleAccountStatusException(HttpServletRequest req, AccessDeniedException ex) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+        ErrorInfo
+            .builder()
+            .url(req.getRequestURI())
+            .status(HttpStatus.FORBIDDEN.value())
+            .message(ex.getMessage())
+            .error(HttpStatus.FORBIDDEN.getReasonPhrase())
+            .build()
+    );
+  }
+   */
 
   /// TODO when this is activated some methods do not work and arrive at this
   /*

@@ -5,6 +5,8 @@ import dev.pe.app.domain.utils.responses.DataResponse;
 import dev.pe.app.domain.utils.responses.DataResponseList;
 import dev.pe.app.domain.utils.responses.PageableResponse;
 import dev.pe.app.models.product.Product;
+import dev.pe.app.models.product.ProductsMoreSelledView;
+import dev.pe.app.models.product.ProductsNewsView;
 import dev.pe.app.models.product.ProductsView;
 import dev.pe.app.services.ICrudService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ public class ProductService implements ICrudService<Product, ProductsView, UUID>
 
   private final IProductRepo productRepo;
   private final IProductsReadOnlyRepo productsReadOnlyRepo;
+  private final IProductsMoreSelledReadOnlyRepo productsMoreSelledReadOnlyRepo;
+  private final IProductsNewsReadOnlyRepo productsNewsReadOnlyRepo;
 
   @Override
   public DataResponse<Product> create(Product entity) {
@@ -129,6 +133,68 @@ public class ProductService implements ICrudService<Product, ProductsView, UUID>
         .data(product)
         .status(HttpStatus.OK.value())
         .message("product found successful")
+        .build();
+  }
+
+  public PageableResponse<ProductsMoreSelledView> findAllMoreSelled(Pageable pageable) {
+    var pageOfProducts = productsMoreSelledReadOnlyRepo.findAll(pageable);
+
+    var prev = PageableUtil.getPrevPage(pageOfProducts);
+
+    var next = PageableUtil.getNextPage(pageOfProducts);
+
+    if(pageOfProducts.getNumber() >= pageOfProducts.getTotalPages()) {
+      return PageableResponse
+          .<ProductsMoreSelledView>builder()
+          .status(HttpStatus.BAD_REQUEST.value())
+          .error(
+              "No content page, see that the page is less than " + pageOfProducts.getTotalPages()
+          )
+          .build();
+    }
+
+    return PageableResponse
+        .<ProductsMoreSelledView>builder()
+        .data(pageOfProducts.getContent())
+        .next(next)
+        .prev(prev)
+        .page(pageOfProducts.getNumber())
+        .pageSize(pageOfProducts.getSize())
+        .hints(pageOfProducts.getTotalElements())
+        .totalPages(pageOfProducts.getTotalPages())
+        .status(HttpStatus.OK.value())
+        .error(null)
+        .build();
+  }
+
+  public PageableResponse<ProductsNewsView> findAllNews(Pageable pageable) {
+    var pageOfProducts = productsNewsReadOnlyRepo.findAll(pageable);
+
+    var prev = PageableUtil.getPrevPage(pageOfProducts);
+
+    var next = PageableUtil.getNextPage(pageOfProducts);
+
+    if(pageOfProducts.getNumber() >= pageOfProducts.getTotalPages()) {
+      return PageableResponse
+          .<ProductsNewsView>builder()
+          .status(HttpStatus.BAD_REQUEST.value())
+          .error(
+              "No content page, see that the page is less than " + pageOfProducts.getTotalPages()
+          )
+          .build();
+    }
+
+    return PageableResponse
+        .<ProductsNewsView>builder()
+        .data(pageOfProducts.getContent())
+        .next(next)
+        .prev(prev)
+        .page(pageOfProducts.getNumber())
+        .pageSize(pageOfProducts.getSize())
+        .hints(pageOfProducts.getTotalElements())
+        .totalPages(pageOfProducts.getTotalPages())
+        .status(HttpStatus.OK.value())
+        .error(null)
         .build();
   }
 }

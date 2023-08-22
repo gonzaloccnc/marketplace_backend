@@ -1,7 +1,5 @@
 package dev.pe.app.security;
 
-import dev.pe.app.domain.handlers.HandleAccessDenied;
-import dev.pe.app.domain.handlers.HandleAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,15 +19,13 @@ public class SecurityConfiguration {
 
   private final JwtAuthenticationFilter jwtAuthFilter;
   private final AuthenticationProvider authenticationProvider;
-  private final HandleAccessDenied handleAccessDenied;
-  private final HandleAuthenticationEntryPoint handleAuthenticationEntryPoint;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> {
-          auth.requestMatchers(HttpMethod.GET,"/products").permitAll();
+          auth.requestMatchers(HttpMethod.GET,"/products/**").permitAll();
           auth.requestMatchers("/auth/**").permitAll();
           auth.anyRequest().authenticated();
         })
@@ -37,11 +33,7 @@ public class SecurityConfiguration {
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         )
         .authenticationProvider(authenticationProvider)
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-        .exceptionHandling(ex -> {
-          ex.accessDeniedHandler(handleAccessDenied);
-          ex.authenticationEntryPoint(handleAuthenticationEntryPoint);
-        });
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
