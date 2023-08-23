@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -73,8 +74,14 @@ public class ProductsController {
   }
 
   @PostMapping
-  public ResponseEntity<DataResponse<Product>> create(@RequestBody Product product) {
-    var message = productService.create(product);
+  public ResponseEntity<DataResponse<Product>> create(
+      @RequestPart("file") MultipartFile file,
+      @RequestPart("product") Product product,
+      HttpServletRequest req
+  ) {
+    var message = productService.create(product, file);
+
+    message.getData().setPhotoMd(PageableUtil.getDomain(req) + message.getData().getPhotoMd());
     return ResponseEntity.status(message.getStatus()).body(message);
   }
 

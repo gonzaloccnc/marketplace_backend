@@ -35,7 +35,7 @@ public class PageableUtil {
     return map;
   }
 
-  private static String getDomain(HttpServletRequest request) {
+  public static String getDomain(HttpServletRequest request) {
     String URI = request.getRequestURI();
 
     return request.getRequestURL().toString().replace(URI, "") + URI;

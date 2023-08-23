@@ -2,7 +2,6 @@ package dev.pe.app.models.product;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -21,6 +20,6 @@ public class Product {
   private int idSubcategory;
   private int brandsId;
 
-  @Transient
-  private MultipartFile file;
+  private String photoMd;
+  private String photoLg;
 }

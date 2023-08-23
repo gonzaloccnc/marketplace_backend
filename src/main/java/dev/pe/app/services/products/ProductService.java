@@ -1,18 +1,22 @@
 package dev.pe.app.services.products;
 
 import dev.pe.app.domain.utils.PageableUtil;
+import dev.pe.app.domain.utils.enums.Storage;
 import dev.pe.app.domain.utils.responses.DataResponse;
-import dev.pe.app.domain.utils.responses.DataResponseList;
 import dev.pe.app.domain.utils.responses.PageableResponse;
 import dev.pe.app.models.product.Product;
 import dev.pe.app.models.product.ProductsMoreSelledView;
 import dev.pe.app.models.product.ProductsNewsView;
 import dev.pe.app.models.product.ProductsView;
 import dev.pe.app.services.ICrudService;
+import dev.pe.app.services.file.FileService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -24,6 +28,7 @@ public class ProductService implements ICrudService<Product, ProductsView, UUID>
   private final IProductsReadOnlyRepo productsReadOnlyRepo;
   private final IProductsMoreSelledReadOnlyRepo productsMoreSelledReadOnlyRepo;
   private final IProductsNewsReadOnlyRepo productsNewsReadOnlyRepo;
+  private final FileService fileService;
 
   @Override
   public DataResponse<Product> create(Product entity) {
@@ -36,6 +41,28 @@ public class ProductService implements ICrudService<Product, ProductsView, UUID>
         .message("Product created successful")
         .build();
 
+  }
+
+  @Transactional
+  public DataResponse<Product> create(Product entity, MultipartFile file) {
+    if(file.isEmpty()) {
+      return DataResponse
+          .<Product>builder()
+          .status(HttpStatus.BAD_REQUEST.value())
+          .message("File is empty, is required")
+          .build();
+    }
+
+    var saveProduct = productRepo.save(entity);
+    var filename = fileService.store(file, saveProduct.getIdProduct(), Storage.PRODUCTS);
+    saveProduct.setPhotoMd("/" +filename);
+
+    return DataResponse
+        .<Product>builder()
+        .data(saveProduct)
+        .status(HttpStatus.CREATED.value())
+        .message("Product created successful")
+        .build();
   }
 
   @Override

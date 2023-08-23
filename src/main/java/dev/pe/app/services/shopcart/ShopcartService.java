@@ -140,7 +140,6 @@ public class ShopcartService implements ICrudService<Shopcart, ShopcartViewDTO, 
           .build();
     }
 
-
     return PageableResponse
         .<ShopcartViewDTO>builder()
         .data(dtoList)

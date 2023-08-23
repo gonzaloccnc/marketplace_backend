@@ -1,9 +1,8 @@
 package dev.pe.app.models.order;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonValue;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,25 +22,31 @@ public class Order {
   private UUID idUserBuyer;
   private UUID idProduct;
 
-  @Enumerated
+  @Enumerated(EnumType.STRING)
   private Delivery stateOrder;
 
+  @JsonFormat(pattern = "dd/MM/yyyy")
   private LocalDate dateAdded;
   private short quantity;
 
+
   public enum Delivery {
+    PENDING("Waiting for processing"),
+    RECEIVED("Order has received"),
+    ON_ROUTE("Order is on way"),
+    CANCELED("Order has been cancelled"),
+    RETURNED("Order has been returned"),
+    OUT_OF_STOCK("Products is currently out of stock"),
+    OUT_OF_TIME("Delivery time exceeded");
 
-    ON_HOLD("EN ESPERA"),
-    RECEIVED("RECIBIDO"),
-    ON_THE_WAY("EN CAMINO"),
-    DELIVERED("ENTREGADO"),
-    CANCELLED("CANCELADO"),
-    RETURNED("DEVUELTO"),
-    NO_STOCK("SIN STOCK"),
-    TIMEOUT("EXPIRADO");
-
-    Delivery(String value) {
+    private final String value;
+    Delivery(String value){
+      this.value = value;
     }
 
+    @JsonValue
+    public String getValue() {
+      return this.value;
+    }
   }
 }
