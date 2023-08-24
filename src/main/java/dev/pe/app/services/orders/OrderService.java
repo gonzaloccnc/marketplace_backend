@@ -25,10 +25,15 @@ public class OrderService {
           .message("order created successful")
           .build();
     } catch (Exception ex) {
+
+      var message = ex.getMessage().split("\n")[0];
+      var index = message.indexOf("[ERROR: ") + 8;
+      var error = message.substring(index);
+
       return DataResponse
           .<Order>builder()
           .message("error generating order")
-          .error(ex.getMessage())
+          .error(error)
           .status(HttpStatus.BAD_REQUEST.value())
           .build();
     }
@@ -40,7 +45,7 @@ public class OrderService {
    var prev = PageableUtil.getPrevPage(pageOfOrders);
    var next = PageableUtil.getNextPage(pageOfOrders);
 
-    if(pageOfOrders.getNumber() >= pageOfOrders.getTotalPages()) {
+    if(pageOfOrders.getNumber() >= pageOfOrders.getTotalPages() & pageOfOrders.getTotalPages() != 0) {
       return PageableResponse
           .<Order>builder()
           .status(HttpStatus.BAD_REQUEST.value())

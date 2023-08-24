@@ -25,4 +25,5 @@ public class ShopcartView {
   private double total;
   private String photoMd;
   private String photoLg;
+  private UUID idSeller;
 }

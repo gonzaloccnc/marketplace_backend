@@ -42,4 +42,9 @@ public class ProductsMoreSelledView {
   private String photoMd;
   private String photoLg;
   private String seller;
+
+  private long idCategory;
+  private long idSubcategory;
+  private long brandId;
+  private UUID idUserSeller;
 }

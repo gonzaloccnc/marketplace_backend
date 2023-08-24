@@ -73,7 +73,7 @@ public class ProductService implements ICrudService<Product, ProductsView, UUID>
 
     var next = PageableUtil.getNextPage(pageOfProducts);
 
-    if(pageOfProducts.getNumber() >= pageOfProducts.getTotalPages()) {
+    if(pageOfProducts.getNumber() >= pageOfProducts.getTotalPages() & pageOfProducts.getTotalPages() != 0) {
       return PageableResponse
           .<ProductsView>builder()
           .status(HttpStatus.BAD_REQUEST.value())
@@ -170,7 +170,7 @@ public class ProductService implements ICrudService<Product, ProductsView, UUID>
 
     var next = PageableUtil.getNextPage(pageOfProducts);
 
-    if(pageOfProducts.getNumber() >= pageOfProducts.getTotalPages()) {
+    if(pageOfProducts.getNumber() >= pageOfProducts.getTotalPages() & pageOfProducts.getTotalPages() != 0) {
       return PageableResponse
           .<ProductsMoreSelledView>builder()
           .status(HttpStatus.BAD_REQUEST.value())
@@ -201,7 +201,7 @@ public class ProductService implements ICrudService<Product, ProductsView, UUID>
 
     var next = PageableUtil.getNextPage(pageOfProducts);
 
-    if(pageOfProducts.getNumber() >= pageOfProducts.getTotalPages()) {
+    if(pageOfProducts.getNumber() >= pageOfProducts.getTotalPages() & pageOfProducts.getTotalPages() != 0) {
       return PageableResponse
           .<ProductsNewsView>builder()
           .status(HttpStatus.BAD_REQUEST.value())

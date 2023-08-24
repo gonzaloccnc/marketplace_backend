@@ -130,7 +130,7 @@ public class ShopcartService implements ICrudService<Shopcart, ShopcartViewDTO, 
     var prev = PageableUtil.getPrevPage(shopcart);
     var next = PageableUtil.getNextPage(shopcart);
 
-    if(shopcart.getNumber() >= shopcart.getTotalPages()) {
+    if(shopcart.getNumber() >= shopcart.getTotalPages() & shopcart.getTotalPages() != 0) {
       return PageableResponse
           .<ShopcartViewDTO>builder()
           .status(HttpStatus.BAD_REQUEST.value())

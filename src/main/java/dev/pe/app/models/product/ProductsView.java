@@ -40,4 +40,9 @@ public class ProductsView {
   private boolean active;
   private String photoMd;
   private String photoLg;
+
+  private long idCategory;
+  private long idSubcategory;
+  private long brandId;
+  private UUID idUserSeller;
 }
