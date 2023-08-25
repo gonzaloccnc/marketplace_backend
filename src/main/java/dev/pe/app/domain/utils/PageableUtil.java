@@ -1,5 +1,6 @@
 package dev.pe.app.domain.utils;
 
+import dev.pe.app.domain.utils.enums.Storage;
 import dev.pe.app.domain.utils.responses.PageableResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
@@ -36,8 +37,15 @@ public class PageableUtil {
   }
 
   public static String getDomain(HttpServletRequest request) {
+    return request.getRequestURL().toString();
+  }
+
+  public static String getImageDomain(HttpServletRequest request, Storage storage) {
     String URI = request.getRequestURI();
 
-    return request.getRequestURL().toString().replace(URI, "") + URI;
+    return request
+        .getRequestURL()
+        .toString()
+        .replace(URI, "/api/v1/images/" + storage.name().toLowerCase());
   }
 }

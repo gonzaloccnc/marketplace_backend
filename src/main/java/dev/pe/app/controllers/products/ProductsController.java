@@ -1,6 +1,7 @@
 package dev.pe.app.controllers.products;
 
 import dev.pe.app.domain.utils.PageableUtil;
+import dev.pe.app.domain.utils.enums.Storage;
 import dev.pe.app.domain.utils.responses.DataResponse;
 import dev.pe.app.domain.utils.responses.PageableResponse;
 import dev.pe.app.models.product.Product;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,16 +83,18 @@ public class ProductsController {
   ) {
     var message = productService.create(product, file);
 
-    message.getData().setPhotoMd(PageableUtil.getDomain(req) + message.getData().getPhotoMd());
     return ResponseEntity.status(message.getStatus()).body(message);
   }
 
   @PatchMapping("/{id}")
-  public ResponseEntity<DataResponse<Product>> update(
-      @RequestBody Product product,
-      @PathVariable UUID id
-  ) {
-    var message = productService.update(product, id);
+  public ResponseEntity<DataResponse<Product>> updateWithFile(
+      @PathVariable UUID id,
+      @Nullable @RequestPart("file") MultipartFile file,
+      @RequestPart("product") Product product,
+      HttpServletRequest req
+  ){
+    var message = productService.update(product, id, file);
+
     return ResponseEntity.status(message.getStatus()).body(message);
   }
 

@@ -14,10 +14,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.UUID;
 
 @Service
@@ -111,6 +113,44 @@ public class ProductService implements ICrudService<Product, ProductsView, UUID>
 
     entity.setIdProduct(id);
     var productUpdate = productRepo.save(entity);
+
+    return DataResponse
+        .<Product>builder()
+        .data(productUpdate)
+        .status(HttpStatus.OK.value())
+        .message("Product update successful")
+        .build();
+  }
+
+  @Transactional
+  public DataResponse<Product> update(Product entity, UUID id, @Nullable MultipartFile file) {
+    var product = this.findById(id).getData();
+
+    if(product == null) {
+      return DataResponse
+          .<Product>builder()
+          .status(HttpStatus.BAD_REQUEST.value())
+          .message("Product with id: " + id + " doesn't exist")
+          .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+          .build();
+    }
+
+    entity.setIdProduct(id);
+    var productUpdate = productRepo.save(entity);
+
+    if(file == null || file.isEmpty()) {
+      var fileName = fileService.load(product.getPhotoMd(), Storage.PRODUCTS).getFileName().toString();
+      productUpdate.setPhotoMd("/" + fileName);
+      return DataResponse
+          .<Product>builder()
+          .data(productUpdate)
+          .status(HttpStatus.OK.value())
+          .message("Product update successful")
+          .build();
+    }
+
+    var filename = fileService.store(file, productUpdate.getIdProduct(), Storage.PRODUCTS);
+    productUpdate.setPhotoMd("/" + filename);
 
     return DataResponse
         .<Product>builder()

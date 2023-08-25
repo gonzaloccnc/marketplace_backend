@@ -5,14 +5,18 @@ import dev.pe.app.domain.utils.responses.ErrorInfo;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.id.IdentifierGenerationException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.nio.file.AccessDeniedException;
@@ -90,60 +94,72 @@ public class ApiExceptionHandler {
     );
   }
 
-  /*
-  @ExceptionHandler(AccountStatusException.class)
-  ResponseEntity<ErrorInfo> handleAccountStatusException(HttpServletRequest req, AccountStatusException ex) {
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+  @ExceptionHandler(FileSizeLimitExceededException.class)
+  @Order(6)
+  ResponseEntity<ErrorInfo> handleSizeLimit(HttpServletRequest req, FileSizeLimitExceededException ex) {
+    return ResponseEntity.badRequest().body(
         ErrorInfo
             .builder()
             .url(req.getRequestURI())
-            .status(HttpStatus.UNAUTHORIZED.value())
+            .status(HttpStatus.BAD_REQUEST.value())
             .message(ex.getMessage())
-            .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
             .build()
     );
   }
 
-  @ExceptionHandler(JwtException.class)
-  ResponseEntity<ErrorInfo> handleAccountStatusException(HttpServletRequest req, JwtException ex) {
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+  @ExceptionHandler(MissingServletRequestPartException.class)
+  @Order(7)
+  ResponseEntity<ErrorInfo> handleMissingRequestPart(HttpServletRequest req, MissingServletRequestPartException ex) {
+    return ResponseEntity.badRequest().body(
         ErrorInfo
             .builder()
             .url(req.getRequestURI())
-            .status(HttpStatus.UNAUTHORIZED.value())
+            .status(HttpStatus.BAD_REQUEST.value())
             .message(ex.getMessage())
-            .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
             .build()
     );
   }
 
-  @ExceptionHandler(AccessDeniedException.class)
-  ResponseEntity<ErrorInfo> handleAccountStatusException(HttpServletRequest req, AccessDeniedException ex) {
-    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+  @ExceptionHandler(MultipartException.class)
+  @Order(8)
+  ResponseEntity<ErrorInfo> handleMultipart(HttpServletRequest req, MultipartException ex) {
+    return ResponseEntity.badRequest().body(
         ErrorInfo
             .builder()
             .url(req.getRequestURI())
-            .status(HttpStatus.FORBIDDEN.value())
+            .status(HttpStatus.BAD_REQUEST.value())
             .message(ex.getMessage())
-            .error(HttpStatus.FORBIDDEN.getReasonPhrase())
+            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
             .build()
     );
   }
-   */
 
-  /// TODO when this is activated some methods do not work and arrive at this
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  @Order(9)
+  ResponseEntity<ErrorInfo> handleNoReadable(HttpServletRequest req, HttpMessageNotReadableException ex) {
+    return ResponseEntity.badRequest().body(
+        ErrorInfo
+            .builder()
+            .url(req.getRequestURI())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .message(ex.getMessage())
+            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+            .build()
+    );
+  }
+
   /*
   @ExceptionHandler(Exception.class)
-  @Order(5)
-  ResponseEntity<ErrorInfo> handleJWT(HttpServletRequest req, Exception ex) {
-    var status = getStatus(req);
-
-    return ResponseEntity.status(status).body(
+  @Order(100)
+  ResponseEntity<ErrorInfo> handleInternalError(HttpServletRequest req, Exception ex) {
+    return ResponseEntity.status(500).body(
         ErrorInfo
             .builder()
             .url(req.getRequestURI())
-            .error(status.getReasonPhrase())
-            .status(status.value())
+            .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
             .message(ex.getLocalizedMessage())
             .build()
     );

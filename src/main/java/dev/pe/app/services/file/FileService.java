@@ -38,10 +38,6 @@ public class FileService implements IFileService {
     }
   }
 
-  /// TODO HACER QUE LA CARPETA SEA EL ID DEL PRODUCTO O USUARIO
-  /// TODO -> LOS PRODUCTOS TENDRAN HASTA 5 IMAGENES Y EL USUARIO SOLO 1 VALIDAR QUE SEA MAXIMO 5 IMAGENES
-  /// TODO -> EL USUARIO TANTO SU CARPETA COMO EL NOMBRE DE ARCHIVO SERAN SU ID
-  /// TODO -> EL PRODUCTO TENDRA UNA IMAGEN PRINCIPAL (PRINCIPAL.JPG/JPEG) Y EL RESTO (demo{1,2,3,4}/jpg/jpeg)
   @Override
   public String store(MultipartFile file, UUID id, Storage storage) {
     String filename = file.getOriginalFilename();
@@ -71,14 +67,17 @@ public class FileService implements IFileService {
   }
 
   @Override
-  public Path load(String filename) {
-    return Paths.get(storageLocation).resolve(filename);
+  public Path load(String filename, Storage storage) {
+
+    return Paths
+        .get(storageLocation + "/" + storage.name().toLowerCase())
+        .resolve(filename);
   }
 
   @Override
-  public Resource loadAsResource(String filename) {
+  public Resource loadAsResource(String filename, Storage storage) {
     try{
-      Path file = load(filename);
+      Path file = load(filename, storage);
       Resource resource = new UrlResource(file.toUri());
 
       if (resource.exists() || resource.isReadable()){
@@ -92,9 +91,9 @@ public class FileService implements IFileService {
   }
 
   @Override
-  public void delete(String filename) {
+  public void delete(String filename, Storage storage) {
     try {
-      Path file = load(filename);
+      Path file = load(filename, storage);
       FileSystemUtils.deleteRecursively(file);
     }catch (IOException e){
       throw new StorageException("cannot delete file " + filename, e);

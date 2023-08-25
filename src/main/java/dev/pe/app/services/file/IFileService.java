@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface IFileService {
   void init();
   String store(MultipartFile file, UUID id, Storage storage);
-  Path load(String filename);
-  Resource loadAsResource(String filename);
-  void delete(String filename);
+  Path load(String filename, Storage storage);
+  Resource loadAsResource(String filename, Storage storage);
+  void delete(String filename, Storage storage);
 }
